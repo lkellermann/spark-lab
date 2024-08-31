@@ -1,4 +1,4 @@
-# Spark Docker
+# Spark Lab
 
 Este repositório fornece um ambiente `Spark 3.5.2` para experimentação.
 
