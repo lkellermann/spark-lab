@@ -1,0 +1,5 @@
+.archive/*
+.old/*
+.DS_Store
+spark-logs/*
+data/landing/individual_incident_archive_parquet_small
