@@ -24,7 +24,7 @@ def read_with_schema_inference(spark, source):
 
 def read_without_schema_inference(spark, source):
     spark.sparkContext.setJobGroup(APP_NAME, "Reading without schema inference." )
-    df = spark.read.option("header", "true").csv(source)
+    df = spark.read.option("header", "true").option("inferSchema", "false").csv(source)
     return df
 
 def read_with_ddl(spark, source):
