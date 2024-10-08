@@ -3,3 +3,7 @@
 .DS_Store
 spark-logs/*
 data/landing/individual_incident_archive_parquet_small
+*.parquet
+*.crc
+*_SUCCESS
+data/landing/individual_incident_archive_csv*
