@@ -1,26 +1,20 @@
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
 
-APP_NAME = f"(Smallfile - 3000 - 1g) {__file__}"
+APP_NAME = f"(Clean dataset - 4g) {__file__}"
 
 
 spark_conf = SparkConf().setAppName(APP_NAME)\
-    .set("spark.executor.memory", "1g")\
-    .set("spark.memory.fraction", "0.80")\
+    .set("spark.executor.memory", "3g")\
     .set("spark.dynamicAllocation.enabled", "true")\
     .set("spark.dynamicAllocation.minExecutors","1")\
     .set("spark.dynamicAllocation.maxExecutors","3")\
-    .set("spark.default.parallelism", "4")\
+    .set("spark.default.parallelism", "3")\
     .set("spark.executor.cores", "2")\
     .set("spark.sql.adaptive.enabled", "true")\
     .set("spark.sql.adaptive.coalescePartitions.enabled", "true")
     
 SOURCE = "/opt/spark/data/landing/individual_incident_archive_csv"
-    
-def read_with_schema_inference(spark, source):
-    spark.sparkContext.setJobGroup(APP_NAME, "Reading with schema inference." )
-    df = spark.read.option("header", "true").option("inferSchema", "true").csv(source)
-    return df
 
 def read_without_schema_inference(spark, source):
     spark.sparkContext.setJobGroup(APP_NAME, "Reading without schema inference." )
@@ -33,7 +27,7 @@ def read_with_ddl(spark, source):
                     ,ID STRING
                     ,ORI STRING
                     ,incident_number STRING
-                    ,date_HRF STRING
+                    ,date_HRF INT
                     ,date_SIF STRING
                     ,hour STRING
                     ,total_offense STRING
@@ -103,17 +97,47 @@ def create_small_parquet_files(spark):
     df = read_with_ddl(spark, SOURCE)
     df_small = df.repartition(num_partitions)
     df_small.write.format("parquet").mode("overwrite").save(output)
+    
+def write_partitioned_parquet_files(spark):
+    output = "/opt/spark/data/bronze/individual_incident_archive_partitioned_parquet"
+    spark.sparkContext.setJobGroup(APP_NAME, "Creating Partitioned Parquet table." )
+    df = read_with_ddl(spark, SOURCE)
+    df.write.format("parquet").partitionBy("date_HRF").mode("overwrite").save(output)
+
+def write_distinct_non_partitioned_parquet_files(spark):
+    output = "/opt/spark/data/bronze/individual_incident_archive_distinct_non_partitioned_parquet"
+    spark.sparkContext.setJobGroup(APP_NAME, "Creating Distinct Non-Partitioned Parquet table." )
+    df = read_with_ddl(spark, SOURCE)
+    df.distinct().write.format("parquet").mode("overwrite").save(output)
+
+
+def write_non_partitioned_parquet_files(spark):
+    output = "/opt/spark/data/bronze/individual_incident_archive_non_partitioned_parquet"
+    spark.sparkContext.setJobGroup(APP_NAME, "Creating NON Partitioned Parquet table." )
+    df = read_with_ddl(spark, SOURCE)
+    df.write.format("parquet").mode("overwrite").save(output)
+
+def write_distinct_csv(spark):
+    output= "/opt/spark/data/landing/individual_incident_archive_csv_distinct"
+    spark.sparkContext.setJobGroup(APP_NAME, "Creating CSV table with distinct values." )
+    df = read_with_ddl(spark, SOURCE)
+    df.distinct().write.format("csv").mode("overwrite").save(output)
 
 def main():
     # To run this application, run the command below into this project root directory:
-    # make submit app=my-apps/individual_incident.py
+    # make run-scaled spark-worker=5
+    # make submit app=my-apps/clean/individual_incident.py
     #
     # Para executar esta aplicação, execute o comando abaixo no diretório root deste projeto:
-    # make submit app=my-apps/individual_incident.py
+    # make run-scaled spark-worker=5
+    # make submit app=my-apps/clean/individual_incident.py
     
     spark = SparkSession.builder.config(conf = spark_conf).getOrCreate()
-    #benchmark_write_df_sorted_with_ddl(spark)
-    create_small_parquet_files(spark)
+    
+    #write_distinct_csv(spark)
+    #write_non_partitioned_parquet_files(spark)
+    #write_partitioned_parquet_files(spark)
+    write_distinct_non_partitioned_parquet_files(spark)
 
 if __name__ == "__main__":
     main()
