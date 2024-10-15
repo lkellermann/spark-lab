@@ -1,9 +1,7 @@
 services:
   spark-master:
     container_name: spark-master-alpine
-    build: 
-      dockerfile: ./SparkAlpine.Dockerfile
-    image: spark-image-alpine
+    image: kellermann92/spark-lab-base:python3.13.0-alpine3.20
     entrypoint: [ './entrypoint.sh', 'master' ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
@@ -14,32 +12,32 @@ services:
       - ../data:/opt/spark/data
       - ../spark-apps:/opt/spark/apps
       - ../spark-logs:/opt/spark/spark-events
-    env_file:
-      - .env.spark
+    #env_file:
+     # - .env.spark
     ports:
       - '9090:8080'
       - '7077:7077'
 
   spark-history-server:
     container_name: spark-history-alpine
-    image: spark-image-alpine
+    image: kellermann92/spark-lab-base:python3.13.0-alpine3.20
     entrypoint: [ './entrypoint.sh', 'history' ]
     depends_on:
       - spark-master
-    env_file:
-      - .env.spark
+    #env_file:
+    #  - .env.spark
     volumes:
       - ../spark-logs:/opt/spark/spark-events
     ports:
       - '18080:18080'
 
   spark-worker:
-    image: spark-image-alpine
+    image: kellermann92/spark-lab-base:python3.13.0-alpine3.20
     entrypoint: [ './entrypoint.sh', 'worker' ]
     depends_on:
       - spark-master
-    env_file:
-      - .env.spark
+    #env_file:
+    # - .env.spark
     volumes:
       - ../data:/opt/spark/data
       - ../spark-apps:/opt/spark/apps
