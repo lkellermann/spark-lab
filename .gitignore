@@ -7,3 +7,4 @@ data/landing/individual_incident_archive_parquet_small
 *.crc
 *_SUCCESS
 data/landing/individual_incident_archive_csv*
+cosign.key
