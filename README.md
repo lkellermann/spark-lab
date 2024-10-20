@@ -1,10 +1,10 @@
 # Spark Lab
 
-Este repositório fornece um ambiente `Spark 3.5.2` para experimentação.
+Este repositório fornece um ambiente `Spark 3.5.3` para experimentação.
 
 ## Objetivo
 
-O objetivo deste repositório é fornecer os arquivos para o desenvolvedor executar experimentos em um cluster `Spark 3.5.2`, em modo client, simulado a partir do Docker. Com isso, o desenvolvedor pode experimentar diversas configurações para a sessão de sua aplicação (`SparkSession`) sem se preocupar com custos de uso de cloud, limitado apenas às condições do seu equipamento.
+O objetivo deste repositório é fornecer os arquivos para o desenvolvedor executar experimentos em um cluster `Spark 3.5.3`, em modo client, simulado a partir do Docker. Com isso, o desenvolvedor pode experimentar diversas configurações para a sessão de sua aplicação (`SparkSession`) sem se preocupar com custos de uso de cloud, limitado apenas às condições do seu equipamento.
 
 ## O que não esperar?
 
@@ -32,14 +32,14 @@ Para iniciar o cluster pela primeira vez, execute os seguintes comandos:
 
 ```sh
 make build
-make run-scaled
+make run
 ```
 
 Caso o usuário deseje criar um cluster com mais de um nó trabalhador, basta substituir o segundo comando acima `make run-scaled` por `make run-scaled spark-worker=x`, onde `x` corresponde a um número inteiro. Por exemplo, o par de comandos abaixo seria usado para criar o cluster pela primeira vez, com 3 nós trabalhadores.
 
 ```sh
 make build
-make run-scaled spark-worker=3
+make run spark-worker=3
 ```
 
 > O tempo para construir as imagens docker pela primeira vez depende da velocidade de conexão com a internet. Com uma conexão de 500MB, o tempo médio foi de 3 minutos.
@@ -75,6 +75,11 @@ Para avaliar aplicações cuja execução já fora finalizada, basta acessar o  
 Para utilizar outros datasets que não foram incluidos aqui, basta criar a estrutura de pastas dentro do subdiretório `data` com os arquivos que serão utilizados.
 
 Por exemplo, neste projeto temos o dataset `data/landing/individual_incident_archive_csv`, composto por 5 arquivos CSVs. A estrutura de pasta emula a camada `landing` de um data lake.
+
+## Detalhes sobre a imagem docker
+A imagem Docker aqui utilizada está disponível no [DockerHub](https://hub.docker.com/layers/kellermann92/spark-lab-base/python3.13.0-alpine3.20/images/sha256-104aa71f580dadf49410d198f369f1a0f50ea42e1fa89deb6b045a8ce14b777f?context=repo)
+
+> Não é recomendável utilizar a imagem sem antes avaliar se as vulnerabilidades apresentadas pela mesma são consideradas graves ou não pelo time de compilance da sua organização. Recomenda-se utilizar o [trivy](https://trivy.dev/) e o [docker scout](https://docs.docker.com/scout/) para avaliar a vunerabilidade da imagem.
 
 ## Datasets utilizados
 

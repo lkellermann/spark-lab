@@ -1,10 +1,9 @@
 FROM python:3.13.0-alpine3.20 AS spark-base
 
-ENV SPARK_VERSION=3.5.2
+ENV SPARK_VERSION=3.5.3
 ENV SPARK_HOME="/opt/spark"
-ENV HADOOP_HOME=${SPARK_HOME:-"/opt/hadoop"}
 
-RUN mkdir -p ${HADOOP_HOME} && mkdir -p ${SPARK_HOME}
+RUN mkdir -p ${SPARK_HOME}
 
 RUN apk update --no-cache && apk upgrade --no-cache \
     && apk add --no-cache \
@@ -18,7 +17,7 @@ RUN wget -nv -O spark-${SPARK_VERSION}-bin-hadoop3.tgz https://archive.apache.or
     && tar xvzf spark-${SPARK_VERSION}-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
     && rm -rf spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
-RUN pip3 install --no-cache-dir pyspark==3.5.2
+RUN pip3 install --no-cache-dir pyspark==${SPARK_VERSION}
 
 ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"
 ENV SPARK_MASTER="spark://spark-master:7077"
@@ -36,3 +35,4 @@ ENV PYTHONPATH=$SPARK_HOME/python
 
 ADD --chmod=777 https://raw.githubusercontent.com/lkellermann/spark-lab/refs/heads/main/docker/entrypoint.sh ./entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
+# docker image build -f docker/SparkAlpine.Dockerfile -t kellermann92/spark-lab-base:python3.13.0-alpine3.20 . 

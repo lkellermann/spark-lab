@@ -11,7 +11,7 @@ build-nc:
 down:
 	 ${DCOMPOSE} $(file_compose) down --volumes
 
-run-scaled:
+run:
 	make down && ${DCOMPOSE} $(file_compose) up --scale spark-worker=$(spark-worker)
 
 stop:
@@ -19,7 +19,3 @@ stop:
 
 submit:
 	docker exec spark-master-alpine spark-submit --master spark://spark-master:7077 --deploy-mode client ./apps/$(app)
-
-submit-alpine:
-	docker exec spark-master-alpine spark-submit --master spark://spark-master:7077 --deploy-mode client ./apps/$(app)
-
