@@ -42,8 +42,6 @@ make build
 make run spark-worker=3
 ```
 
-> O tempo para construir as imagens docker pela primeira vez depende da velocidade de conexão com a internet. Com uma conexão de 500MB, o tempo médio foi de 3 minutos.
-
 ## Como executar uma aplicação Spark?
 
 Para executar uma aplicação Spark utilizando este projeto, é necessário colocar o diretório contendo os arquivos da aplicação no subdiretório `spark-apps`. Em seguida, basta executar o seguinte comando:
@@ -78,9 +76,7 @@ Por exemplo, neste projeto temos o dataset `data/landing/individual_incident_arc
 
 ## Detalhes sobre a imagem docker
 A imagem Docker aqui utilizada está disponível no [DockerHub](https://hub.docker.com/layers/kellermann92/spark-lab-base/python3.13.0-alpine3.20/images/sha256-104aa71f580dadf49410d198f369f1a0f50ea42e1fa89deb6b045a8ce14b777f?context=repo)
-
-> Não é recomendável utilizar a imagem sem antes avaliar se as vulnerabilidades apresentadas pela mesma são consideradas graves ou não pelo time de compilance da sua organização. Recomenda-se utilizar o [trivy](https://trivy.dev/) e o [docker scout](https://docs.docker.com/scout/) para avaliar a vunerabilidade da imagem.
-
+~~~~
 ## Datasets utilizados
 
 - [National Incident Based Reporting System](https://dasil.grinnell.edu/DataRepository/NIBRS/Individual_Incident_Archive_CSV.zip):
