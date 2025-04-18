@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: spark-lab
+  annotations:
+    github.com/project-slug: lkellermann/spark-lab
+spec:
+  type: other
+  lifecycle: unknown
+  owner: lkellermann
