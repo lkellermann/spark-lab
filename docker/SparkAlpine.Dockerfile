@@ -30,9 +30,7 @@ RUN tar xvzf spark-${SPARK_VERSION}-bin-hadoop3-scala${SCALA_VERSION}.tgz --dire
     && rm -rf spark-${SPARK_VERSION}-bin-hadoop3-scala${SCALA_VERSION}.tgz \
     && chmod u+x ${SPARK_HOME}/sbin/* \
     && chmod u+x ${SPARK_HOME}/bin/* \
-    && pip3 install --no-cache-dir pyspark==${SPARK_VERSION}
-
-RUN pip3 install --no-cache-dir delta-spark==${DELTA_SPARK_VERSION}
+    && pip3 install --no-cache-dir pyspark==${SPARK_VERSION} delta-spark==${DELTA_SPARK_VERSION}
 
 COPY --chmod=777 ./spark-defaults.conf ./conf/spark-defaults.conf
 COPY --chmod=777 ./entrypoint.sh ./entrypoint.sh
