@@ -1,14 +1,14 @@
 # Spark Lab
 
-This repository provides a small environment for `Spark 3.5.3` experiments.
+This repository provides a small environment for `Spark 3.5.7` experiments with `Delta Lake 3.3.2` support.
 
 ## Objectives
 
-The objective of this project is to provide files to a developer run experiments in a pseudo `Spark 3.5.3` cluster in client mode. This environment is suitable for running small experiments as the ones provided under the `spark-apps` subdirectory.
+The objective of this project is to provide files to a developer run experiments in a pseudo `Spark 3.5.7` cluster in client mode with Delta Lake support. This environment is suitable for running small experiments as the ones provided under the `spark-apps` subdirectory, including Delta Lake features like liquid clustering and Z-Order optimization.
 
 ## What not to expect?
 
-This repository is not about a data analytics project. It's about analyzing Spark applications. Do not expect to find complex transformations or examples of data enrichment.
+This repository is **not** about a data analytics project. It's about analyzing Spark applications. Do not expect to find complex transformations or examples of data enrichment.
 
 ## Hardware utilized in this project
 
@@ -24,42 +24,53 @@ Unix-like environments are highly recommended.
 
 - [Docker Engine](https://docs.docker.com/engine/install/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [Make](https://www.gnu.org/software/make/)
+- [Task](https://taskfile.dev/) - Task runner (alternative to Make)
 
 ## How to start?
 
 To start the cluster for the first time, run the following commands:
 
 ```sh
-make build
-make run
+task image-build
+task rund
 ```
 
-If an user wants to include more than a worker, they can use the following command
+If an user wants to include more than a worker, they can use the following command:
 
 ```sh
-make build
-make run-scaled spark-worker=<number of workers>
+task image-build
+task rund WORKER_COUNT=<number of workers>
 ```
 
 For example, to create a cluster with 3 worker nodes, run:
 
 ```sh
-make build
-make run spark-worker=3
+task image-build
+task rund WORKER_COUNT=3
 ```
 
-## How to run a Spark  application?
+## How to run a Spark application?
 
 To run a Spark application in this project, save it in the subdirectory `spark-apps`. Then run the following command:
+
 ```sh
-make submit app=relative/pat/under/spark-apps/app.py
+task submit APP=relative/path/under/spark-apps/app.py
 ```
 
 For example, to run an application under `my-apps/individual_incident.py`, run:
 
 ```sh
-make submit app=my-apps/individual_incident.py
+task submit APP=my-apps/individual_incident.py
+```
+
+### Delta Lake Examples
+
+This project includes example applications with Delta Lake:
+
+```sh
+task submit APP=my-apps/clean/individual_incident_delta_liquid_clustering.py
+task submit APP=my-apps/clean/individual_incident_delta_zorder.py
+task submit APP=delta-lake-test/delta_test.py
 ```
 
 ## How to monitor an application execution?
@@ -76,19 +87,20 @@ To access the Spark UI for previously executed application, just access the `Spa
 
 ## How to add new datasets?
 
-To include new datasets, just put the files in `data` subdirectory in a proper structure. For example, we have the directory `data/landing/individual_incident_archive_csv`, which has 5 aCSV files. This structure emulates the `landing` in a data lake..
+To include new datasets, just put the files in `data` subdirectory in a proper structure. For example, we have the directory `data/landing/individual_incident_archive_csv`, which has 5 CSV files. This structure emulates the `landing` in a data lake.
 
-## Docker image details
-The docker image is available at my personal public [DockerHub](https://hub.docker.com/layers/kellermann92/spark-lab-base/python3.13.0-alpine3.20/images/sha256-104aa71f580dadf49410d198f369f1a0f50ea42e1fa89deb6b045a8ce14b777f?context=repo) repository
+----
 
 ## Datasets
 
 - [National Incident Based Reporting System](https://dasil.grinnell.edu/DataRepository/NIBRS/Individual_Incident_Archive_CSV.zip):
-  - Formato: CSV.
-  - Tamanho comprimido: ~2.1 GB
-  - Tamanho total: ~24 GB.
+  - Format: CSV.
+  - Compressed Size: ~2.1 GB
+  - Uncompressed Size: ~24 GB.
 
-## ~~References~~
+----
+
+## References
 
 - [Data Analysis and Social Inquiry Lab](https://dasil.sites.grinnell.edu/downloadable-data/)
 - [Setting up a Spark standalone cluster on Docker in layman terms](https://medium.com/@MarinAgli1/setting-up-a-spark-standalone-cluster-on-docker-in-layman-terms-8cbdc9fdd14b)
