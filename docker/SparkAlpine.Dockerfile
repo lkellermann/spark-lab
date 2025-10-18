@@ -1,11 +1,20 @@
 FROM python:3.13.0-alpine3.20 AS spark-base
 
-ENV SPARK_VERSION=3.5.3
+ENV SPARK_VERSION=3.5.7
 ENV SPARK_HOME="/opt/spark"
+ENV SCALA_VERSION=2.13
+ENV DELTA_SPARK_VERSION=3.3.2
 
-RUN mkdir -p ${SPARK_HOME}
+ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"
+ENV SPARK_MASTER="spark://spark-master:7077"
+ENV SPARK_MASTER_HOST=spark-master
+ENV SPARK_MASTER_PORT=7077
+ENV SPARK_NO_DAEMONIZE=true
+ENV SPARK_SUBMIT_ARGS="--packages io.delta:delta-spark_${SCALA_VERSION}:${DELTA_SPARK_VERSION} --conf spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension --conf spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
+ENV PYSPARK_PYTHON=python3
+ENV PYTHONPATH=$SPARK_HOME/python
 
-RUN apk update --no-cache && apk upgrade --no-cache \
+RUN mkdir -p ${SPARK_HOME} && apk update --no-cache && apk upgrade --no-cache \
     && apk add --no-cache \
         bash \
         curl \
@@ -14,26 +23,18 @@ RUN apk update --no-cache && apk upgrade --no-cache \
 
 WORKDIR ${SPARK_HOME}
 
-RUN wget -nv -O spark-${SPARK_VERSION}-bin-hadoop3.tgz https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz \
-    && tar xvzf spark-${SPARK_VERSION}-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
-    && rm -rf spark-${SPARK_VERSION}-bin-hadoop3.tgz
 
-RUN pip3 install --no-cache-dir pyspark==${SPARK_VERSION}
+ADD https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3-scala${SCALA_VERSION}.tgz ./
 
-ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"
-ENV SPARK_MASTER="spark://spark-master:7077"
-ENV SPARK_MASTER_HOST=spark-master
-ENV SPARK_MASTER_PORT=7077
-ENV SPARK_NO_DAEMONIZE=true
-ENV PYSPARK_PYTHON=python3
+RUN tar xvzf spark-${SPARK_VERSION}-bin-hadoop3-scala${SCALA_VERSION}.tgz --directory ${SPARK_HOME} --strip-components 1 \
+    && rm -rf spark-${SPARK_VERSION}-bin-hadoop3-scala${SCALA_VERSION}.tgz \
+    && chmod u+x ${SPARK_HOME}/sbin/* \
+    && chmod u+x ${SPARK_HOME}/bin/* \
+    && pip3 install --no-cache-dir pyspark==${SPARK_VERSION}
 
-ADD https://raw.githubusercontent.com/lkellermann/spark-lab/refs/heads/main/docker/spark-defaults.conf "$SPARK_HOME/conf/spark-defaults.conf"
+RUN pip3 install --no-cache-dir delta-spark==${DELTA_SPARK_VERSION}
 
-RUN chmod u+x /opt/spark/sbin/* && \
-    chmod u+x /opt/spark/bin/*
+COPY --chmod=777 ./spark-defaults.conf ./conf/spark-defaults.conf
+COPY --chmod=777 ./entrypoint.sh ./entrypoint.sh
 
-ENV PYTHONPATH=$SPARK_HOME/python
-
-ADD --chmod=777 https://raw.githubusercontent.com/lkellermann/spark-lab/refs/heads/main/docker/entrypoint.sh ./entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
-# docker image build -f docker/SparkAlpine.Dockerfile -t kellermann92/spark-lab-base:python3.13.0-alpine3.20 .
