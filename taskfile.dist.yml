@@ -11,15 +11,11 @@ tasks:
       - chmod -R 777 ./data
       - chmod -R 777 ./spark-apps
       - chmod -R 777 ./spark-logs
-  build:
+
+  image-build:
     desc: Build the Docker images
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} build
-
-  build-nc:
-    desc: Build the Docker images without cache
-    cmds:
-      - docker compose -f {{.COMPOSE_FILE}} build --no-cache
+      - docker image build ./docker -f docker/SparkAlpine.Dockerfile -t kellermann92/spark-lab-base:python3.13.0-alpine3.20
 
   down:
     desc: Stop and remove containers, networks, and volumes
@@ -53,4 +49,4 @@ tasks:
           echo "Error: Please specify the app parameter. Usage: task submit APP=your-app-name"
           exit 1
         fi
-      - docker exec spark-master-alpine spark-submit --master spark://spark-master:7077 --deploy-mode client ./apps/{{.APP}}
+      - docker exec spark-master-alpine spark-submit --master spark://spark-master:7077 --deploy-mode client --packages io.delta:delta-spark_2.13:3.3.2 ./apps/{{.APP}}
