@@ -5,8 +5,15 @@ vars:
   WORKER_COUNT: 1
 
 tasks:
+  volumes: 
+    desc: Create path for volumes.
+    cmds:
+      - mkdir -p ./data
+      - mkdir -p ./spark-logs
+
   volumes-permissions:
     desc: Set permissions for data, apps, and logs directories
+    deps: [volumes]
     cmds:
       - chmod -R 777 ./data
       - chmod -R 777 ./spark-apps
