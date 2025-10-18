@@ -5,13 +5,20 @@ services:
     entrypoint: [ './entrypoint.sh', 'master' ]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
-      interval: 5s
-      timeout: 3s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
-      - ../data:/opt/spark/data
-      - ../spark-apps:/opt/spark/apps
-      - ../spark-logs:/opt/spark/spark-events
+      - type: bind
+        source: ../data
+        target: /opt/spark/data
+      - type: bind
+        source: ../spark-apps
+        target: /opt/spark/apps
+      - type: bind
+        source: ../spark-logs
+        target: /opt/spark/spark-events
     #env_file:
      # - .env.spark
     ports:
@@ -27,7 +34,9 @@ services:
     #env_file:
     #  - .env.spark
     volumes:
-      - ../spark-logs:/opt/spark/spark-events
+      - type: bind
+        source: ../spark-logs
+        target: /opt/spark/spark-events
     ports:
       - '18080:18080'
 
@@ -39,14 +48,12 @@ services:
     #env_file:
     # - .env.spark
     volumes:
-      - ../data:/opt/spark/data
-      - ../spark-apps:/opt/spark/apps
-      - ../spark-logs:/opt/spark/spark-events
-
-volumes:
-  data:
-    external: true
-  spark-apps:
-    external: true
-  spark-logs:
-    external: true
+      - type: bind
+        source: ../data
+        target: /opt/spark/data
+      - type: bind
+        source: ../spark-apps
+        target: /opt/spark/apps
+      - type: bind
+        source: ../spark-logs
+        target: /opt/spark/spark-events

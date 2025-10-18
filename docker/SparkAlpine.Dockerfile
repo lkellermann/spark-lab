@@ -7,9 +7,10 @@ RUN mkdir -p ${SPARK_HOME}
 
 RUN apk update --no-cache && apk upgrade --no-cache \
     && apk add --no-cache \
-        rsync=3.3.0-r0 \
-        openjdk11=11.0.24_p8-r0 \
-        bash=5.2.26-r0
+        bash \
+        curl \
+        openjdk11 \
+        rsync
 
 WORKDIR ${SPARK_HOME}
 
@@ -35,4 +36,4 @@ ENV PYTHONPATH=$SPARK_HOME/python
 
 ADD --chmod=777 https://raw.githubusercontent.com/lkellermann/spark-lab/refs/heads/main/docker/entrypoint.sh ./entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
-# docker image build -f docker/SparkAlpine.Dockerfile -t kellermann92/spark-lab-base:python3.13.0-alpine3.20 . 
+# docker image build -f docker/SparkAlpine.Dockerfile -t kellermann92/spark-lab-base:python3.13.0-alpine3.20 .
