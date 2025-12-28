@@ -1,5 +1,7 @@
 # Spark Lab
 
+**The provided Docker Images are now being maintained in a different [repository](https://github.com/leandroasaservice/spark-compose). Refer to it for new updates**
+
 This repository provides a small environment for `Spark 3.5.7` experiments with `Delta Lake 3.3.2` support.
 
 ## Objectives
